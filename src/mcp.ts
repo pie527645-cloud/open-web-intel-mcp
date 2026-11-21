@@ -312,7 +312,12 @@ async function main(): Promise<void> {
     );
 
     const shutdown = () => {
-      httpServer.close(() => process.exit(0));
+      const forceExit = setTimeout(() => process.exit(1), 10_000);
+      forceExit.unref();
+      httpServer.close(() => {
+        clearTimeout(forceExit);
+        process.exit(0);
+      });
     };
     process.once('SIGINT', shutdown);
     process.once('SIGTERM', shutdown);
