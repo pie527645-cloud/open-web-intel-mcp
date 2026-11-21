@@ -121,8 +121,24 @@ function extractEmailsFromHtml(html: string): string[] {
   return [...found.values()].slice(0, 25);
 }
 
+const EMAIL_EDGE_PUNCTUATION = new Set(['.', ',', ';', ':', '(', ')', '<', '>', '[', ']', '"', "'"]);
+
+function trimEdgeSet(input: string, charSet: ReadonlySet<string>): string {
+  let start = 0;
+  let end = input.length;
+  while (start < end && charSet.has(input[start]!)) start += 1;
+  while (end > start && charSet.has(input[end - 1]!)) end -= 1;
+  return start === 0 && end === input.length ? input : input.slice(start, end);
+}
+
+function trimTrailingSlashes(input: string): string {
+  let end = input.length;
+  while (end > 0 && input.charCodeAt(end - 1) === 47) end -= 1;
+  return end === input.length ? input : input.slice(0, end);
+}
+
 function addValidEmail(raw: string, map: Map<string, string>): void {
-  const cleaned = raw.replace(/^[.,;:()<>[\]"']+|[.,;:()<>[\]"']+$/g, '').trim();
+  const cleaned = trimEdgeSet(raw, EMAIL_EDGE_PUNCTUATION).trim();
   const lower = cleaned.toLowerCase();
   if (!lower.includes('@')) return;
   if (ASSET_EXTENSION_REGEX.test(lower)) return;
@@ -164,7 +180,7 @@ function extractSocialLinks(html: string, baseUrl: string): SocialLinksMap {
     }
     resolved.hash = '';
     resolved.search = '';
-    const clean = resolved.toString().replace(/\/+$/, '');
+    const clean = trimTrailingSlashes(resolved.toString());
 
     for (const [platform, regex] of SOCIAL_PATTERNS) {
       if (regex.test(clean)) {

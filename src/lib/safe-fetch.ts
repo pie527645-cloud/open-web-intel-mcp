@@ -271,6 +271,14 @@ const BLOCKED_HOSTNAMES = new Set([
   'instance-data',
 ]);
 
+function trimTrailingDots(input: string): string {
+  let end = input.length;
+  while (end > 0 && input.charCodeAt(end - 1) === 46) {
+    end -= 1;
+  }
+  return end === input.length ? input : input.slice(0, end);
+}
+
 function validateUrlSyntaxAndHostname(rawUrl: string): { parsed: URL; normalizedHost: string } {
   let parsed: URL;
   try {
@@ -298,7 +306,7 @@ function validateUrlSyntaxAndHostname(rawUrl: string): { parsed: URL; normalized
 
   const unbracketed =
     rawHost.startsWith('[') && rawHost.endsWith(']') ? rawHost.slice(1, -1) : rawHost;
-  const normalizedHost = unbracketed.replace(/\.+$/, '');
+  const normalizedHost = trimTrailingDots(unbracketed);
 
   if (
     !normalizedHost ||
@@ -359,8 +367,8 @@ export function createSafeConnectLookup(lookupFn: DnsLookupAllFn): LookupFunctio
   return (hostname, opts, callback) => {
     const clean =
       hostname.startsWith('[') && hostname.endsWith(']')
-        ? hostname.slice(1, -1).replace(/\.+$/, '')
-        : hostname.replace(/\.+$/, '');
+        ? trimTrailingDots(hostname.slice(1, -1))
+        : trimTrailingDots(hostname);
     const wantAll = Boolean(opts && typeof opts === 'object' && opts.all);
 
     const deliverError = (err: Error) => {

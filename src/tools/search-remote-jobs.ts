@@ -275,7 +275,12 @@ function normalizeCanonicalUrl(rawUrl: string): string {
         u.searchParams.delete(key);
       }
     }
-    return u.toString().replace(/\/+$/, '').toLowerCase();
+    const rawStr = u.toString();
+    let end = rawStr.length;
+    while (end > 0 && rawStr.charCodeAt(end - 1) === 47) {
+      end -= 1;
+    }
+    return rawStr.slice(0, end).toLowerCase();
   } catch {
     return rawUrl.trim().toLowerCase();
   }
