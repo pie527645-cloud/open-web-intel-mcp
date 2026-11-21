@@ -1,0 +1,51 @@
+{
+  "name": "open-web-intel-mcp",
+  "version": "1.0.0",
+  "description": "Zero-proxy, zero-browser local MCP server and CLI for SSRF-safe web markdown extraction, sitemaps, ATS/remote jobs, ecommerce store intel, domain enrichment, and podcast RSS discovery.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20.18.1"
+  },
+  "bin": {
+    "open-web-intel": "./dist/cli.js",
+    "open-web-intel-mcp": "./dist/mcp.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && tsc -p tsconfig.test.json && node --test dist-tests/tests/safe-fetch.test.js dist-tests/tests/tools.test.js dist-tests/tests/mcp-and-cli.test.js dist-tests/tests/html-and-xml.test.js",
+    "lint": "tsc --noEmit -p tsconfig.test.json"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "web-scraping",
+    "markdown",
+    "ssrf",
+    "ats-jobs",
+    "shopify",
+    "domain-enrichment",
+    "podcast-rss",
+    "cli"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "undici": "^7.30.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "typescript": "^5.8.2"
+  }
+}
